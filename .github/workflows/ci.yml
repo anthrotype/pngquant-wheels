@@ -163,6 +163,8 @@ jobs:
         git fetch --tags --force
         # strip leading 'refs/tags/' to get the tag name
         TAG_NAME="${GITHUB_REF##*/}"
+        echo "TAG_NAME=$TAG_NAME" >> "$GITHUB_ENV"
+
         # Dump tag message to temporary .md file (excluding the PGP signature at the bottom)
         TAG_MESSAGE=$(git tag -l --format='%(contents)' $TAG_NAME | sed -n '/-----BEGIN PGP SIGNATURE-----/q;p')
         echo "$TAG_MESSAGE" > "${{ runner.temp }}/release_notes.md"
@@ -179,7 +181,7 @@ jobs:
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
       with:
-        name: ${{ github.ref }}
+        name: ${{ env.TAG_NAME }}
         tag_name: ${{ github.ref }}
         body_path: "${{ runner.temp }}/release_notes.md"
         draft: false
