@@ -2,10 +2,10 @@ name: CI
 
 on:
   push:
+    branches: [main]
+    tags: ["v*.*.*"]
   pull_request:
-  release:
-    types:
-      - published
+    branches: [main]
 
 jobs:
   build_sdist:
@@ -137,10 +137,10 @@ jobs:
         path: dist
 
   release:
-    name: Upload if release
+    name: Release on tags
+    if: startsWith(github.ref, 'refs/tags/v')
     needs: [build_sdist, build_macos, build_windows, build_linux ]
     runs-on: ubuntu-latest
-    if: github.event_name == 'release' && github.event.action == 'published'
 
     steps:
     - uses: actions/download-artifact@v2
@@ -148,14 +148,39 @@ jobs:
         name: dist
         path: dist
 
-    - name: Upload archives to GitHub Release
-      uses: svenstaro/upload-release-action@v2
-      if: "startsWith(github.ref, 'refs/tags/')"
+    - name: Extract release notes from annotated tag message
+      id: release_notes
+      env:
+        # e.g. v0.1.0a1, v1.2.0b2 or v2.3.0rc3, but not v1.0.0
+        PRERELEASE_TAG_PATTERN: "v[[:digit:]]+\\.[[:digit:]]+\\.[[:digit:]]+([ab]|rc)[[:digit:]]+"
+      run: |
+        # GH checkout action doesn't preserve tag annotations, we must fetch them
+        # https://github.com/actions/checkout/issues/290
+        git fetch --tags --force
+        # strip leading 'refs/tags/' to get the tag name
+        TAG_NAME="${GITHUB_REF##*/}"
+        # Dump tag message to temporary .md file (excluding the PGP signature at the bottom)
+        TAG_MESSAGE=$(git tag -l --format='%(contents)' $TAG_NAME | sed -n '/-----BEGIN PGP SIGNATURE-----/q;p')
+        echo "$TAG_MESSAGE" > "${{ runner.temp }}/release_notes.md"
+        # if the tag has a pre-release suffix mark the Github Release accordingly
+        if egrep -q "$PRERELEASE_TAG_PATTERN" <<< "$TAG_NAME"; then
+          echo "Tag contains a pre-release suffix"
+          echo "IS_PRERELEASE=true" >> "$GITHUB_ENV"
+        else
+          echo "Tag does not contain pre-release suffix"
+          echo "IS_PRERELEASE=false" >> "$GITHUB_ENV"
+        fi
+
+    - name: Create GitHub release
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
       with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file_glob: true
-        file: dist/*
-        tag: ${{ github.ref }}
+        name: ${{ github.ref }}
+        tag_name: ${{ github.ref }}
+        body_path: "${{ runner.temp }}/release_notes.md"
+        draft: false
+        prerelease: ${{ env.IS_PRERELEASE }}
+        files: dist/*
 
     - uses: pypa/gh-action-pypi-publish@v1.4.2
       with:
