@@ -52,8 +52,6 @@ jobs:
         run: python build.py wheel
       - name: Build wheels - universal2
         run: python build.py wheel --universal2
-      - name: Add LICENSE file to wheels
-        run: ./add_license_file_to_wheel.sh dist/*.whl
       - name: Upload wheel
         uses: actions/upload-artifact@v2
         with:
@@ -87,9 +85,6 @@ jobs:
         run: pip install -r requirements.txt
       - name: Build wheel
         run: python build.py wheel --target ${{matrix.platform.target}}
-      - name: Add LICENSE file to wheels
-        shell: bash
-        run: ./add_license_file_to_wheel.sh dist/*.whl
       - name: Upload wheel
         uses: actions/upload-artifact@v2
         with:
@@ -126,10 +121,6 @@ jobs:
       run: |
         export PATH=$PYTHON_DIR:$PATH
         python build.py wheel
-    - name: Add LICENSE file to wheels
-      run: |
-        export PATH=$PYTHON_DIR:$PATH
-        ./add_license_file_to_wheel.sh dist/*.whl
     - name: Upload wheels
       uses: actions/upload-artifact@v2
       with:
