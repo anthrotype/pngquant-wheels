@@ -1,3 +1,4 @@
 [submodule "pngquant"]
 	path = pngquant
 	url = https://github.com/kornelski/pngquant
+	ignore = dirty
