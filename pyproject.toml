@@ -1,0 +1,21 @@
+[build-system]
+requires = ["maturin>=0.12,<0.13"]
+build-backend = "maturin"
+
+[tool.maturin]
+# If I use the 'manifest-path' option, then maturin takes all the metadata from the
+# Cargo.toml and ignores the metadata from pyproject.toml; it also fails to build
+# a sdist for some reason. Only when pyproject.toml is in the same directory as
+# Cargo.toml, everything works.
+# manifest-path = "pngquant/Cargo.toml"
+bindings = "bin"
+
+[project]
+name = "pngquant-cli"
+# by default, use the same 'version' as Cargo.toml, but can override if needed
+# version = "2.17.0.post1"
+description = "Precompiled binaries for pngquant, the lossy PNG compressor based on libimagequant."
+maintainers = [{name = "Cosimo Lupo", email = "cosimo@anthrotype.com"}]
+
+[project.urls]
+repository = "https://github.com/anthrotype/pngquant-wheels"
