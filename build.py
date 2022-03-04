@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 
-root_dir = Path(__file__).parent
+root_dir = Path(__file__).parent.resolve()
 crate_dir = root_dir / "pngquant"
 dist_dir = root_dir / "dist"
 cargo_manifest_path = crate_dir / "Cargo.toml"
