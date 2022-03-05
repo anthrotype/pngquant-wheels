@@ -13,9 +13,10 @@ bindings = "bin"
 [project]
 name = "pngquant-cli"
 # by default, use the same 'version' as Cargo.toml, but can override if needed
-version = "2.17.0.post1"
+version = "2.17.0.post2"
 description = "Precompiled binaries for pngquant, the lossy PNG compressor based on libimagequant."
 maintainers = [{name = "Cosimo Lupo", email = "cosimo@anthrotype.com"}]
+license = {file = "COPYRIGHT"}
 
 [project.urls]
 repository = "https://github.com/anthrotype/pngquant-wheels"
