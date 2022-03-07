@@ -6,6 +6,7 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
+from wheeltools import InWheel
 
 
 root_dir = Path(__file__).parent.resolve()
@@ -37,9 +38,17 @@ def main():
     except (IndexError, KeyError):
         sys.exit("usage: build.py [sdist|wheel]")
 
-    return subprocess.call(
-        cmd + ["-o", str(dist_dir)] + sys.argv[2:], cwd=str(crate_dir)
+    subprocess.run(
+        cmd + ["-o", str(dist_dir)] + sys.argv[2:], check=True, cwd=str(crate_dir)
     )
+
+    # maturin doesn't add the license text to the wheel archive yet so we
+    # have to do it ourselves: cf. https://github.com/PyO3/maturin/issues/829
+    for wheel_file in dist_dir.glob("pngquant*.whl"):
+        with InWheel(in_wheel=str(wheel_file), out_wheel=str(wheel_file)) as tmpdir:
+            distinfo = next(Path(tmpdir).glob("*.dist-info"))
+            assert distinfo.is_dir()
+            shutil.copyfile(crate_dir / "COPYRIGHT", distinfo / "LICENSE")
 
 
 if __name__ == "__main__":
