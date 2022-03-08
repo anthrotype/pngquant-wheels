@@ -167,7 +167,7 @@ jobs:
     # https://github.com/PyO3/maturin/issues/829
     - name: Add license text file to wheels
       run: |
-        pip install wheeltools
+        pip install -r requirements.txt
         python add_license_file_to_wheels.py dist/*.whl
 
     - name: Upload wheels
