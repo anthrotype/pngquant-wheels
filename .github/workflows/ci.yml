@@ -153,12 +153,23 @@ jobs:
     steps:
     - uses: actions/checkout@v2
       with:
-        fetch-depth: 0
+        submodules: recursive
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: "3.x"
 
     - uses: actions/download-artifact@v2
       with:
         name: dist
         path: dist
+
+    # https://github.com/PyO3/maturin/issues/829
+    - name: Add license text file to wheels
+      run: |
+        pip install wheeltools
+        python add_license_file_to_wheels.py dist/*.whl
 
     - name: Extract release notes from annotated tag message
       id: release_notes
