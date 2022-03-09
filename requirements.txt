@@ -1,5 +1,4 @@
-maturin
+maturin>=0.12.10,<0.13
 tomli
 tomli-w
 twine
-wheeltools
