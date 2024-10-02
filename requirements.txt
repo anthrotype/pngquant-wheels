@@ -1,5 +1,2 @@
 maturin
-tomli
-tomli-w
 twine
-wheeltools
