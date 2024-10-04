@@ -10,7 +10,7 @@ include = ["README.rst"]
 [project]
 name = "pngquant-cli"
 # by default, use the same 'version' as Cargo.toml, but can override if needed
-version = "3.0.3b1"
+# version = "3.0.3"
 description = "Precompiled binaries for pngquant, the lossy PNG compressor based on libimagequant."
 maintainers = [{name = "Cosimo Lupo", email = "cosimo@anthrotype.com"}]
 readme = {file = "README.rst"}
